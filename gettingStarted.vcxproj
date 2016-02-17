@@ -267,13 +267,13 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\GettingStarted\Assignment1.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="phong_perfragment.fs.txt" />
     <Text Include="phong_perfragment.vs.txt" />
     <Text Include="phong_pervertex.fs.txt" />
     <Text Include="phong_pervertex.vs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Assignment2.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
