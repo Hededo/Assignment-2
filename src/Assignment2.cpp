@@ -21,7 +21,6 @@ class assignment1_app : public sb7::application
 public:
 	assignment1_app()
 		: per_fragment_program(0),
-		per_vertex_program(0),
 		per_vertex(false)
 	{
 	}
@@ -55,7 +54,6 @@ protected:
 	void load_shaders();
 
 	GLuint          per_fragment_program;
-	GLuint          per_vertex_program;
 
 	//Where uniforms are defined
 	struct uniforms_block
@@ -381,7 +379,7 @@ void assignment1_app::startup()
 void assignment1_app::render(double currentTime)
 {
 	const float f = (float)currentTime;
-	glUseProgram(per_vertex ? per_vertex_program : per_fragment_program);
+	glUseProgram(per_fragment_program);
 
 #pragma region Calculations for mouse interaction camera rotation and translation matrix
 	float fAngle = 0.0f;
@@ -557,29 +555,11 @@ void assignment1_app::load_shaders()
 	vs = sb7::shader::load("phong_perfragment.vs.txt", GL_VERTEX_SHADER);
 	fs = sb7::shader::load("phong_perfragment.fs.txt", GL_FRAGMENT_SHADER);
 
-	if (per_fragment_program)
-	{
-		glDeleteProgram(per_fragment_program);
-	}
-
-
 	per_fragment_program = glCreateProgram();
 	glAttachShader(per_fragment_program, vs);
 	glAttachShader(per_fragment_program, fs);
 	glLinkProgram(per_fragment_program);
 
-	vs = sb7::shader::load("phong_pervertex.vs.txt", GL_VERTEX_SHADER);
-	fs = sb7::shader::load("phong_pervertex.fs.txt", GL_FRAGMENT_SHADER);
-
-	if (per_vertex_program)
-	{
-		glDeleteProgram(per_vertex_program);
-	}
-
-	per_vertex_program = glCreateProgram();
-	glAttachShader(per_vertex_program, vs);
-	glAttachShader(per_vertex_program, fs);
-	glLinkProgram(per_vertex_program);
 }
 
 #pragma region Event Handlers
@@ -602,9 +582,6 @@ void assignment1_app::onKey(int key, int action)
 			fXpos = 0.0f;
 			fYpos = 0.0f;
 			fZpos = 75.0f;
-			break;
-		case 'V':
-			per_vertex = !per_vertex;
 			break;
 		case 'C':
 			// Provide a ‘C’ key to switch between colors in the vertex attribute to a constant color for shading the sphere.
