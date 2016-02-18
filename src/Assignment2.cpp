@@ -456,18 +456,39 @@ void assignment1_app::render(double currentTime)
 	block->lightPos = lightPos;
 #pragma endregion
 
-#pragma region Draw Sphere
+#pragma region Draw Semi-Reflective Sphere
 	glBindVertexArray(sphere_vao);
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 	vmath::mat4 model_matrix =
-		vmath::translate(-9.3f, -16.0f, 1.0f) *
+		//vmath::translate(-9.3f, -16.0f, 1.0f) *
+		vmath::translate(10.0f, -6.3f, -1.0f) *
 		vmath::scale(6.0f);
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 	block->uni_color = purple;
+	block->useUniformColor = useUniformColor;
+	block->invertNormals = falseVec;
+	block->isSphere = trueVec;
+
+	glCullFace(GL_BACK);
+	object.render();
+#pragma endregion
+
+#pragma region Draw Reflective Sphere
+	glBindVertexArray(sphere_vao);
+	glUnmapBuffer(GL_UNIFORM_BUFFER);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
+
+	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
+    model_matrix =
+		vmath::translate(-9.3f, -13.0f, 1.0f) *
+		vmath::scale(6.0f);
+	block->mv_matrix = view_matrix * model_matrix;
+	block->view_matrix = view_matrix;
+	block->uni_color = orange;
 	block->useUniformColor = useUniformColor;
 	block->invertNormals = falseVec;
 	block->isSphere = trueVec;
@@ -506,12 +527,13 @@ void assignment1_app::render(double currentTime)
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 #pragma endregion
 
-#pragma region Draw Room
+#pragma region Draw Floor
 
 	model_matrix =
 		//vmath::rotate((float)currentTime * 14.5f, 0.0f, 1.0f, 0.0f) * //used to constantly rotate
+		vmath::translate(vmath::vec3(0.0f, -25.0f, 0.0f)) * 
 		vmath::rotate(45.0f, 0.0f, 1.0f, 0.0f)*
-		vmath::scale(22.0f);
+		vmath::scale(vmath::vec3(30.0f, 0.2f, 30.0f));
 
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;

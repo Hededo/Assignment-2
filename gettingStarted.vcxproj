@@ -269,8 +269,6 @@
   <ItemGroup>
     <Text Include="phong_perfragment.fs.txt" />
     <Text Include="phong_perfragment.vs.txt" />
-    <Text Include="phong_pervertex.fs.txt" />
-    <Text Include="phong_pervertex.vs.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Assignment2.cpp" />
