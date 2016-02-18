@@ -527,7 +527,24 @@ void assignment1_app::render(double currentTime)
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 #pragma endregion
 
+#pragma region Draw Skybox
+
+	model_matrix =
+		vmath::scale(100.0f);
+
+	block->mv_matrix = view_matrix * model_matrix;
+	block->view_matrix = view_matrix;
+	block->invertNormals = falseVec;
+
+	glCullFace(GL_FRONT);
+	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
+
+
 #pragma region Draw Floor
+
+	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
+	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 
 	model_matrix =
 		//vmath::rotate((float)currentTime * 14.5f, 0.0f, 1.0f, 0.0f) * //used to constantly rotate
