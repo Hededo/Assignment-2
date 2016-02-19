@@ -31,7 +31,7 @@ public:
 protected:
 	void init()
 	{
-		static const char title[] = "Assignment 1";
+		static const char title[] = "Assignment 2";
 
 		sb7::application::init();
 
