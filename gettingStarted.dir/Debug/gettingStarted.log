@@ -1,3 +1,1 @@
-﻿  Assignment2.cpp
-C:\VersionedCode\Assignment-2\include\vmath.h(1022): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  gettingStarted.vcxproj -> C:\VersionedCode\Assignment-2\bin\gettingStarted_d.exe
+﻿  gettingStarted.vcxproj -> C:\VersionedCode\Assignment-2\bin\gettingStarted_d.exe

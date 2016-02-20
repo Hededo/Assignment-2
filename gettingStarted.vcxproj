@@ -267,11 +267,24 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="floor.fs.txt" />
+    <Text Include="floor.vs.txt" />
     <Text Include="phong_perfragment.fs.txt" />
     <Text Include="phong_perfragment.vs.txt" />
+    <Text Include="phong_pervertex.fs.txt" />
+    <Text Include="phong_pervertex.vs.txt" />
+    <Text Include="render.fs.txt" />
+    <Text Include="render.vs.txt" />
+    <Text Include="skybox.fs.txt" />
+    <Text Include="skybox.vs.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Assignment2.cpp" />
+    <ClCompile Include="src\cubemapenv.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mountaincube.ktx" />
+    <None Include="pattern1.ktx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

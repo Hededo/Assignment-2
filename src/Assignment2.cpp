@@ -21,7 +21,9 @@ class assignment1_app : public sb7::application
 public:
 	assignment1_app()
 		: per_fragment_program(0),
-		per_vertex(false)
+		checkerFloorProgram(0),
+		per_vertex(false),
+		tex_index(0)
 	{
 	}
 #pragma endregion
@@ -54,6 +56,10 @@ protected:
 	void load_shaders();
 
 	GLuint          per_fragment_program;
+	GLuint          checkerFloorProgram;
+
+	GLuint          tex_object[2];
+	GLuint          tex_index;
 
 	//Where uniforms are defined
 	struct uniforms_block
@@ -282,6 +288,31 @@ const vmath::vec4 trueVec = vmath::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		//End Cube
 	};
 
+#define B 0x00, 0x00, 0x00, 0x00
+#define W 0xFF, 0xFF, 0xFF, 0xFF
+     const GLubyte tex_data[16 * 16 * 4] =
+	{
+		B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+		W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+		B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+		W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+		B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+		W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+		B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+		W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+		B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+		W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+		B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+		W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+		B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+		W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+		B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+		W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	};
+#undef B
+#undef W
+
+
 #pragma endregion
 
 #pragma endregion
@@ -361,10 +392,23 @@ void assignment1_app::startup()
 #pragma endregion
 
 	useUniformColor = falseVec;
-
+#pragma region Sphere vertex data
 	glGenVertexArrays(1, &sphere_vao);
 	glBindVertexArray(sphere_vao);
 	object.load("bin\\media\\objects\\sphere.sbm");
+#pragma endregion
+
+#pragma region Bind Texture
+	glGenTextures(1, &tex_object[0]);
+	glBindTexture(GL_TEXTURE_2D, tex_object[0]);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB8, 16, 16);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 16, 16, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	tex_object[1] = sb7::ktx::file::load("pattern1.ktx");
+#pragma endregion
+
 
 #pragma region OPENGL Settings
 
@@ -379,7 +423,9 @@ void assignment1_app::startup()
 void assignment1_app::render(double currentTime)
 {
 	const float f = (float)currentTime;
-	glUseProgram(per_fragment_program);
+	//glUseProgram(per_vertex ? checkerFloorProgram : per_fragment_program);
+
+	glUseProgram(checkerFloorProgram);
 
 #pragma region Calculations for mouse interaction camera rotation and translation matrix
 	float fAngle = 0.0f;
@@ -433,6 +479,8 @@ void assignment1_app::render(double currentTime)
 #pragma endregion
 
 	glViewport(0, 0, info.windowWidth, info.windowHeight);
+
+	glBindTexture(GL_TEXTURE_2D, tex_object[tex_index]);
 
 	// Create sky blue background
 	glClearBufferfv(GL_COLOR, 0, skyBlue);
@@ -527,19 +575,6 @@ void assignment1_app::render(double currentTime)
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 #pragma endregion
 
-#pragma region Draw Skybox
-
-	model_matrix =
-		vmath::scale(100.0f);
-
-	block->mv_matrix = view_matrix * model_matrix;
-	block->view_matrix = view_matrix;
-	block->invertNormals = falseVec;
-
-	glCullFace(GL_FRONT);
-	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
-
-
 #pragma region Draw Floor
 
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
@@ -550,7 +585,7 @@ void assignment1_app::render(double currentTime)
 		//vmath::rotate((float)currentTime * 14.5f, 0.0f, 1.0f, 0.0f) * //used to constantly rotate
 		vmath::translate(vmath::vec3(0.0f, -25.0f, 0.0f)) * 
 		vmath::rotate(45.0f, 0.0f, 1.0f, 0.0f)*
-		vmath::scale(vmath::vec3(30.0f, 0.2f, 30.0f));
+		vmath::scale(vmath::vec3(30.0f, 0.0f, 30.0f));
 
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
@@ -594,11 +629,29 @@ void assignment1_app::load_shaders()
 	vs = sb7::shader::load("phong_perfragment.vs.txt", GL_VERTEX_SHADER);
 	fs = sb7::shader::load("phong_perfragment.fs.txt", GL_FRAGMENT_SHADER);
 
+	if (per_fragment_program)
+	{
+		glDeleteProgram(per_fragment_program);
+	}
+
+
 	per_fragment_program = glCreateProgram();
 	glAttachShader(per_fragment_program, vs);
 	glAttachShader(per_fragment_program, fs);
 	glLinkProgram(per_fragment_program);
 
+	vs = sb7::shader::load("floor.vs.txt", GL_VERTEX_SHADER);
+	fs = sb7::shader::load("floor.fs.txt", GL_FRAGMENT_SHADER);
+
+	if (checkerFloorProgram)
+	{
+		glDeleteProgram(checkerFloorProgram);
+	}
+
+	checkerFloorProgram = glCreateProgram();
+	glAttachShader(checkerFloorProgram, vs);
+	glAttachShader(checkerFloorProgram, fs);
+	glLinkProgram(checkerFloorProgram);
 }
 
 #pragma region Event Handlers
@@ -622,6 +675,9 @@ void assignment1_app::onKey(int key, int action)
 			fYpos = 0.0f;
 			fZpos = 75.0f;
 			break;
+		case 'V':
+			per_vertex = !per_vertex;
+			break;
 		case 'C':
 			// Provide a ‘C’ key to switch between colors in the vertex attribute to a constant color for shading the sphere.
 			if (useUniformColor[0] == 1)
@@ -632,6 +688,11 @@ void assignment1_app::onKey(int key, int action)
 			{
 				useUniformColor = trueVec;
 			}
+			break;
+		case 'T':
+			tex_index++;
+			if (tex_index > 1)
+				tex_index = 0;
 			break;
 		}
 	}
