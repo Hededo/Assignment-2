@@ -281,7 +281,6 @@
   <ItemGroup>
     <ClCompile Include="src\Assignment2.cpp" />
     <ClCompile Include="src\cubemapenv.cpp" />
-    <ClCompile Include="src\simpletexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mountaincube.ktx" />

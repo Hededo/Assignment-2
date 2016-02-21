@@ -427,9 +427,8 @@ void assignment1_app::startup()
 void assignment1_app::render(double currentTime)
 {
 	const float f = (float)currentTime;
-	//glUseProgram(per_vertex ? checkerFloorProgram : per_fragment_program);
 
-	glUseProgram(checkerFloorProgram);
+	glUseProgram(per_fragment_program);
 
 #pragma region Calculations for mouse interaction camera rotation and translation matrix
 	float fAngle = 0.0f;
@@ -579,6 +578,7 @@ void assignment1_app::render(double currentTime)
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 #pragma endregion
 
+	glUseProgram(checkerFloorProgram);
 #pragma region Draw Floor
 
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
@@ -600,6 +600,7 @@ void assignment1_app::render(double currentTime)
 
 #pragma endregion
 
+	glUseProgram(per_fragment_program);
 #pragma region Draw Cube
 
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
