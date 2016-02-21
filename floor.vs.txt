@@ -17,7 +17,6 @@ layout (std140) uniform constants
 	vec4 light_pos;									     		
 	vec4 useUniformColor;	
 	vec4 invertNormals;
-	vec4 isSphere;
 };
 
 // Outputs to Fragment Shader

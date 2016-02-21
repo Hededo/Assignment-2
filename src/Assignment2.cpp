@@ -22,7 +22,6 @@ public:
 	assignment1_app()
 		: per_fragment_program(0),
 		checkerFloorProgram(0),
-		per_vertex(false),
 		tex_index(0)
 	{
 	}
@@ -71,17 +70,12 @@ protected:
 		vmath::vec4     lightPos;
 		vmath::vec4	    useUniformColor;
 		vmath::vec4	    invertNormals;
-		vmath::vec4	    isSphere;
 	};
 
 	GLuint          uniforms_buffer;
 
 	//Used to load and render sphere
 	sb7::object     object;
-
-	bool            per_vertex;      //Bool used to switch between shaders
-	vmath::vec4     useUniformColor; //Bool used to change the color of the sphere
-
 
 	// Variables for mouse interaction
 	bool bPerVertex;
@@ -391,7 +385,6 @@ void assignment1_app::startup()
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(uniforms_block), NULL, GL_DYNAMIC_DRAW);
 #pragma endregion
 
-	useUniformColor = falseVec;
 #pragma region Sphere vertex data
 	glGenVertexArrays(1, &sphere_vao);
 	glBindVertexArray(sphere_vao);
@@ -520,9 +513,8 @@ void assignment1_app::render(double currentTime)
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 	block->uni_color = purple;
-	block->useUniformColor = useUniformColor;
+	block->useUniformColor = trueVec;
 	block->invertNormals = falseVec;
-	block->isSphere = trueVec;
 
 	glCullFace(GL_BACK);
 	object.render();
@@ -540,9 +532,8 @@ void assignment1_app::render(double currentTime)
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 	block->uni_color = orange;
-	block->useUniformColor = useUniformColor;
+	block->useUniformColor = trueVec;
 	block->invertNormals = falseVec;
-	block->isSphere = trueVec;
 
 	glCullFace(GL_BACK);
 	object.render();
@@ -555,7 +546,6 @@ void assignment1_app::render(double currentTime)
 #pragma region Uniforms that remain constant for cubes
 	block->uni_color = orange;
 	block->useUniformColor = falseVec;
-	block->isSphere = falseVec;
 #pragma endregion
 
 #pragma region bind cube vertex data
@@ -679,19 +669,6 @@ void assignment1_app::onKey(int key, int action)
 			fXpos = 0.0f;
 			fYpos = 0.0f;
 			fZpos = 75.0f;
-			break;
-		case 'V':
-			per_vertex = !per_vertex;
-			break;
-		case 'C':
-			if (useUniformColor[0] == 1)
-			{
-				useUniformColor = falseVec;
-			}
-			else
-			{
-				useUniformColor = trueVec;
-			}
 			break;
 		case 'T':
 			tex_index++;
