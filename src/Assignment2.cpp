@@ -56,9 +56,12 @@ protected:
 
 	GLuint          per_fragment_program;
 	GLuint          checkerFloorProgram;
+	GLuint          render_prog;
+	GLuint          skybox_prog;
 
 	GLuint          tex_object[2];
 	GLuint          tex_index;
+	GLuint          tex_envmap;
 
 	//Where uniforms are defined
 	struct uniforms_block
@@ -391,7 +394,7 @@ void assignment1_app::startup()
 	object.load("bin\\media\\objects\\sphere.sbm");
 #pragma endregion
 
-#pragma region Bind Texture
+#pragma region Bind Floor Texture
 	// Generate a name for the texture
 	glGenTextures(1, &tex_object[0]);
 	// Now bind it to the context using the GL_TEXTURE_2D binding point
@@ -404,6 +407,13 @@ void assignment1_app::startup()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	tex_object[1] = sb7::ktx::file::load("pattern1.ktx");
+#pragma endregion
+
+#pragma region Bind envMap Texture
+	tex_envmap = sb7::ktx::file::load("mountaincube.ktx");
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 #pragma endregion
 
 
@@ -420,6 +430,7 @@ void assignment1_app::startup()
 void assignment1_app::render(double currentTime)
 {
 	const float f = (float)currentTime;
+	const float t = (float)currentTime * 0.1f;
 
 	glUseProgram(per_fragment_program);
 
@@ -481,6 +492,7 @@ void assignment1_app::render(double currentTime)
 	// Create sky blue background
 	glClearBufferfv(GL_COLOR, 0, skyBlue);
 	glClearBufferfv(GL_DEPTH, 0, ones);
+	glEnable(GL_DEPTH_TEST);
 
 	// Set up view and perspective matrix
 	vmath::vec3 view_position = vmath::vec3(0.0f, 0.0f, fZpos);
@@ -571,6 +583,7 @@ void assignment1_app::render(double currentTime)
 	glUseProgram(checkerFloorProgram);
 #pragma region Draw Floor
 
+	glBindTexture(GL_TEXTURE_2D, tex_object[0]);
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
@@ -610,6 +623,42 @@ void assignment1_app::render(double currentTime)
 	glCullFace(GL_BACK);
 	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
 #pragma endregion
+
+	glUseProgram(skybox_prog);
+#pragma region Draw Skybox
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, tex_envmap);
+	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
+	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
+
+	/*vmath::mat4 proj_matrix = vmath::perspective(60.0f, (float)info.windowWidth / (float)info.windowHeight, 0.1f, 1000.0f);
+	vmath::mat4 view_matrix = 
+	vmath::mat4 mv_matrix = view_matrix *
+		vmath::rotate(t, 1.0f, 0.0f, 0.0f) *
+		vmath::rotate(t * 130.1f, 0.0f, 1.0f, 0.0f) *
+		vmath::translate(0.0f, -4.0f, 0.0f);*/
+
+	model_matrix =
+		vmath::rotate(0.0f, 0.0f, 1.0f, 0.0f) *
+		vmath::translate(10.0f, -17.3f, -1.0f) *
+		vmath::scale(5.0f);
+
+	block->mv_matrix = view_matrix * model_matrix;
+
+	block->view_matrix = vmath::lookat(vmath::vec3(15.0f * sinf(t), 0.0f, 15.0f * cosf(t)),
+		vmath::vec3(0.0f, 0.0f, 0.0f),
+		vmath::vec3(0.0f, 1.0f, 0.0f));
+
+	block->useUniformColor = falseVec;
+	block->invertNormals = trueVec;
+
+	glDisable(GL_DEPTH_TEST);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	//glCullFace(GL_BACK);
+	//glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
+#pragma endregion
 }
 
 /*
@@ -647,6 +696,34 @@ void assignment1_app::load_shaders()
 	glAttachShader(checkerFloorProgram, vs);
 	glAttachShader(checkerFloorProgram, fs);
 	glLinkProgram(checkerFloorProgram);
+
+	//________________________________________________________________
+	if (render_prog)
+		glDeleteProgram(render_prog);
+
+	vs = sb7::shader::load("render.vs.txt", GL_VERTEX_SHADER);
+	fs = sb7::shader::load("render.fs.txt", GL_FRAGMENT_SHADER);
+
+	render_prog = glCreateProgram();
+	glAttachShader(render_prog, vs);
+	glAttachShader(render_prog, fs);
+	glLinkProgram(render_prog);
+
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+
+
+	vs = sb7::shader::load("skybox.vs.txt", GL_VERTEX_SHADER);
+	fs = sb7::shader::load("skybox.fs.txt", GL_FRAGMENT_SHADER);
+
+	skybox_prog = glCreateProgram();
+	glAttachShader(skybox_prog, vs);
+	glAttachShader(skybox_prog, fs);
+	glLinkProgram(skybox_prog);
+
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+	//___________________________________________________________
 }
 
 #pragma region Event Handlers
