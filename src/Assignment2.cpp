@@ -410,9 +410,6 @@ void assignment1_app::startup()
 
 #pragma region Bind envMap Texture
 	tex_envmap = sb7::ktx::file::load("mountaincube.ktx");
-
-	glGenVertexArrays(1, &skybox_vao);
-	glBindVertexArray(skybox_vao);
 #pragma endregion
 
 

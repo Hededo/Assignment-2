@@ -32,7 +32,7 @@
 //{
 //public:
 //    cubemapenv_app()
-//        : envmap_index(0),
+//        :
 //          render_prog(0)
 //    {
 //    }
@@ -63,8 +63,7 @@
 //
 //    virtual void startup()
 //    {
-//        envmaps[0] = sb7::ktx::file::load("mountaincube.ktx");
-//        tex_envmap = envmaps[envmap_index];
+//		tex_envmap = sb7::ktx::file::load("mountaincube.ktx");
 //
 //        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 //        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -89,19 +88,19 @@
 //    {
 //        static const GLfloat gray[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 //        static const GLfloat ones[] = { 1.0f };
-//        const float t = (float)currentTime * 0.1f;
+//        const float f = (float)currentTime * 0.1f;
 //
 //		glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 //		glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 //		uniforms_block * block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 //
 //		vmath::mat4 proj_matrix = vmath::perspective(60.0f, (float)info.windowWidth / (float)info.windowHeight, 0.1f, 1000.0f);
-//		vmath::mat4 view_matrix = vmath::lookat(vmath::vec3(15.0f * sinf(t), 0.0f, 15.0f * cosf(t)),
+//		vmath::mat4 view_matrix = vmath::lookat(vmath::vec3(15.0f * sinf(f), 0.0f, 15.0f * cosf(f)),
 //                                                vmath::vec3(0.0f, 0.0f, 0.0f),
 //                                                vmath::vec3(0.0f, 1.0f, 0.0f));
 //		vmath::mat4 mv_matrix = view_matrix *
-//                                vmath::rotate(t, 1.0f, 0.0f, 0.0f) *
-//                                vmath::rotate(t * 130.1f, 0.0f, 1.0f, 0.0f) *
+//                                vmath::rotate(f, 1.0f, 0.0f, 0.0f) *
+//                                vmath::rotate(f * 130.1f, 0.0f, 1.0f, 0.0f) *
 //                                vmath::translate(0.0f, -4.0f, 0.0f);
 //
 //		block->proj_matrix = proj_matrix;
@@ -131,7 +130,7 @@
 //    virtual void shutdown()
 //    {
 //        glDeleteProgram(render_prog);
-//        glDeleteTextures(3, envmaps);
+//        //glDeleteTextures(3, tex_envmap);
 //    }
 //
 //    void load_shaders()
@@ -172,10 +171,6 @@
 //            {
 //                case 'R': load_shaders();
 //                    break;
-//                case 'E':
-//                    envmap_index = (envmap_index + 1) % 3;
-//                    tex_envmap = envmaps[envmap_index];
-//                    break;
 //            }
 //        }
 //    }
@@ -185,21 +180,6 @@
 //    GLuint          skybox_prog;
 //
 //    GLuint          tex_envmap;
-//    GLuint          envmaps[3];
-//    int             envmap_index;
-//
-//    struct
-//    {
-//        struct
-//        {
-//            GLint       mv_matrix;
-//            GLint       proj_matrix;
-//        } render;
-//        struct
-//        {
-//            GLint       view_matrix;
-//        } skybox;
-//    } uniforms;
 //
 //    sb7::object     object;
 //
