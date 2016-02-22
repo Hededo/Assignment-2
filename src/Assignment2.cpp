@@ -22,7 +22,8 @@ public:
 	assignment1_app()
 		: per_fragment_program(0),
 		checkerFloorProgram(0),
-		tex_index(0)
+		tex_index(0),
+		render_prog(0)
 	{
 	}
 #pragma endregion
@@ -37,6 +38,7 @@ protected:
 		sb7::application::init();
 
 		memcpy(info.title, title, sizeof(title));
+
 		info.windowWidth = 512;
 		info.windowHeight = 512;
 	}
@@ -77,8 +79,9 @@ protected:
 
 	GLuint          uniforms_buffer;
 
-	//Used to load and render sphere
 	sb7::object     object;
+
+	GLuint          skybox_vao;
 
 	// Variables for mouse interaction
 	bool bPerVertex;
@@ -308,8 +311,6 @@ const GLubyte tex_data[16 * 16 * 4] =
 };
 #undef B
 #undef W
-
-
 #pragma endregion
 
 #pragma endregion
@@ -403,17 +404,15 @@ void assignment1_app::startup()
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB8, 16, 16);
 	// Assume the texture is already bound to the GL_TEXTURE_2D target
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 16, 16, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	tex_object[1] = sb7::ktx::file::load("pattern1.ktx");
 #pragma endregion
 
 #pragma region Bind envMap Texture
 	tex_envmap = sb7::ktx::file::load("mountaincube.ktx");
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+	glGenVertexArrays(1, &skybox_vao);
+	glBindVertexArray(skybox_vao);
 #pragma endregion
 
 
@@ -429,8 +428,7 @@ void assignment1_app::startup()
 
 void assignment1_app::render(double currentTime)
 {
-	const float f = (float)currentTime;
-	const float t = (float)currentTime * 0.1f;
+	const float f = (float)currentTime * 0.1f;
 
 	glUseProgram(per_fragment_program);
 
@@ -583,6 +581,9 @@ void assignment1_app::render(double currentTime)
 	glUseProgram(checkerFloorProgram);
 #pragma region Draw Floor
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 	glBindTexture(GL_TEXTURE_2D, tex_object[0]);
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
@@ -596,7 +597,8 @@ void assignment1_app::render(double currentTime)
 
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
-	block->invertNormals = falseVec;
+	block->invertNormals = trueVec;
+	block->uni_color = gray;
 
 	glCullFace(GL_FRONT);
 	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
@@ -626,38 +628,32 @@ void assignment1_app::render(double currentTime)
 
 	glUseProgram(skybox_prog);
 #pragma region Draw Skybox
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+	glBindVertexArray(skybox_vao);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, tex_envmap);
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 
-	/*vmath::mat4 proj_matrix = vmath::perspective(60.0f, (float)info.windowWidth / (float)info.windowHeight, 0.1f, 1000.0f);
-	vmath::mat4 view_matrix = 
-	vmath::mat4 mv_matrix = view_matrix *
-		vmath::rotate(t, 1.0f, 0.0f, 0.0f) *
-		vmath::rotate(t * 130.1f, 0.0f, 1.0f, 0.0f) *
-		vmath::translate(0.0f, -4.0f, 0.0f);*/
-
-	model_matrix =
-		vmath::rotate(0.0f, 0.0f, 1.0f, 0.0f) *
-		vmath::translate(10.0f, -17.3f, -1.0f) *
-		vmath::scale(5.0f);
-
-	block->mv_matrix = view_matrix * model_matrix;
-
-	block->view_matrix = vmath::lookat(vmath::vec3(15.0f * sinf(t), 0.0f, 15.0f * cosf(t)),
+	vmath::mat4 proj_matrix = vmath::perspective(60.0f, (float)info.windowWidth / (float)info.windowHeight, 0.1f, 1000.0f);
+	view_matrix = vmath::lookat(vmath::vec3(15.0f * sinf(f), 0.0f, 15.0f * cosf(f)),
 		vmath::vec3(0.0f, 0.0f, 0.0f),
 		vmath::vec3(0.0f, 1.0f, 0.0f));
+	vmath::mat4 mv_matrix = view_matrix *
+		vmath::rotate(f, 1.0f, 0.0f, 0.0f) *
+		vmath::rotate(f * 130.1f, 0.0f, 1.0f, 0.0f) *
+		vmath::translate(0.0f, -4.0f, 0.0f);
 
-	block->useUniformColor = falseVec;
-	block->invertNormals = trueVec;
+	block->proj_matrix = proj_matrix;
+	block->view_matrix = view_matrix;
+	block->mv_matrix = mv_matrix;
 
 	glDisable(GL_DEPTH_TEST);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	//glCullFace(GL_BACK);
-	//glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
 #pragma endregion
 }
 
