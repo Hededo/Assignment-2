@@ -20,13 +20,21 @@ out VS_OUT
 {
     vec3 normal;
     vec3 view;
+	vec3 useColor;
 } vs_out;
 
 void main(void)
 {
+    vs_out.useColor = vec3(0.0, 0.0, 0.0);
+
+	if (useUniformColor.x == 1)
+	{
+		vs_out.useColor = vec3(1.0, 1.0, 1.0);	
+	}
+
     vec4 pos_vs = mv_matrix * position;
 
-    vs_out.normal = mat3(mv_matrix) * normal;
+    vs_out.normal = normal.xyz;
     vs_out.view = pos_vs.xyz;
 
     gl_Position = proj_matrix * pos_vs;

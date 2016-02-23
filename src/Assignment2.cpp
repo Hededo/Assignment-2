@@ -505,7 +505,7 @@ void assignment1_app::render(double currentTime)
 	block->proj_matrix = perspective_matrix;
 	block->lightPos = lightPos;
 #pragma endregion
-	//glUseProgram(render_prog);
+	glUseProgram(render_prog);
 #pragma region Draw Semi-Reflective Sphere
 	glBindVertexArray(sphere_vao);
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
@@ -525,7 +525,7 @@ void assignment1_app::render(double currentTime)
 	glCullFace(GL_BACK);
 	object.render();
 #pragma endregion
-	glUseProgram(per_fragment_program);
+
 #pragma region Draw Reflective Sphere
 	glBindVertexArray(sphere_vao);
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
@@ -538,10 +538,9 @@ void assignment1_app::render(double currentTime)
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 	block->uni_color = orange;
-	block->useUniformColor = trueVec;
+	block->useUniformColor = falseVec;
 	block->invertNormals = falseVec;
 
-	glCullFace(GL_BACK);
 	object.render();
 #pragma endregion
 
@@ -554,6 +553,7 @@ void assignment1_app::render(double currentTime)
 	block->useUniformColor = falseVec;
 #pragma endregion
 
+	glUseProgram(per_fragment_program);
 #pragma region bind cube vertex data
 	glBindVertexArray(cube_vao);
 
@@ -601,8 +601,8 @@ void assignment1_app::render(double currentTime)
 
 #pragma endregion
 
-	glUseProgram(per_fragment_program);
-#pragma region Draw Cube
+	glUseProgram(skybox_prog);
+#pragma region Draw Face Cube
 
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
@@ -623,7 +623,7 @@ void assignment1_app::render(double currentTime)
 #pragma endregion
 
 	
-	glUseProgram(skybox_prog);
+	//glUseProgram(skybox_prog);
 #pragma region Draw Skybox
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, tex_envmap);
@@ -636,16 +636,13 @@ void assignment1_app::render(double currentTime)
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 
 	model_matrix =
-		//vmath::rotate(0.0f, 0.0f, 1.0f, 0.0f) *
-		//vmath::rotate((float)currentTime * 14.5f, 0.0f, 1.0f, 0.0f) * //used to constantly rotate
 		vmath::translate(0.0f, 0.0f, 0.0f) *
-		vmath::scale(100.0f);
+		vmath::scale(150.0f);
 
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 
 	glCullFace(GL_FRONT);
-	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
 #pragma endregion
 }
