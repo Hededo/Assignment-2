@@ -21,12 +21,13 @@ out VS_OUT
     vec3 normal;
     vec3 view;
 	vec3 useColor;
+	vec4 uniColor;
 } vs_out;
 
 void main(void)
 {
     vs_out.useColor = vec3(0.0, 0.0, 0.0);
-
+	vs_out.uniColor = uni_color;
 	if (useUniformColor.x == 1)
 	{
 		vs_out.useColor = vec3(1.0, 1.0, 1.0);	
