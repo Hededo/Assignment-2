@@ -81,8 +81,6 @@ protected:
 
 	sb7::object     object;
 
-	GLuint          skybox_vao;
-
 	// Variables for mouse interaction
 	bool bPerVertex;
 	bool bShiftPressed = false;
@@ -416,7 +414,7 @@ void assignment1_app::startup()
 #pragma region OPENGL Settings
 
 	glEnable(GL_CULL_FACE); // Use face culling to see into the room.
-	glFrontFace(GL_CW); //glFrontFace(GLenum mode) In a scene composed entirely of opaque closed surfaces, back-facing polygons are never visible.
+    glFrontFace(GL_CW); //glFrontFace(GLenum mode) In a scene composed entirely of opaque closed surfaces, back-facing polygons are never visible.
 	glEnable(GL_DEPTH_TEST); //glEnable(GLenum cap) glEnable and glDisable enable and disable various capabilities.
 	glDepthFunc(GL_LEQUAL);	//glDepthFunc(GLenum func) specifies the function used to compare each incoming pixel depth value with the depth value present in the depth buffer. 
 #pragma endregion
@@ -425,6 +423,8 @@ void assignment1_app::startup()
 
 void assignment1_app::render(double currentTime)
 {
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 	const float f = (float)currentTime * 0.1f;
 
 	glUseProgram(per_fragment_program);
@@ -487,7 +487,6 @@ void assignment1_app::render(double currentTime)
 	// Create sky blue background
 	glClearBufferfv(GL_COLOR, 0, skyBlue);
 	glClearBufferfv(GL_DEPTH, 0, ones);
-	glEnable(GL_DEPTH_TEST);
 
 	// Set up view and perspective matrix
 	vmath::vec3 view_position = vmath::vec3(0.0f, 0.0f, fZpos);
@@ -506,7 +505,7 @@ void assignment1_app::render(double currentTime)
 	block->proj_matrix = perspective_matrix;
 	block->lightPos = lightPos;
 #pragma endregion
-
+	//glUseProgram(render_prog);
 #pragma region Draw Semi-Reflective Sphere
 	glBindVertexArray(sphere_vao);
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
@@ -526,7 +525,7 @@ void assignment1_app::render(double currentTime)
 	glCullFace(GL_BACK);
 	object.render();
 #pragma endregion
-
+	glUseProgram(per_fragment_program);
 #pragma region Draw Reflective Sphere
 	glBindVertexArray(sphere_vao);
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
@@ -623,34 +622,30 @@ void assignment1_app::render(double currentTime)
 	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
 #pragma endregion
 
+	
 	glUseProgram(skybox_prog);
 #pragma region Draw Skybox
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, tex_envmap);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
-	glBindVertexArray(skybox_vao);
-
-	glBindTexture(GL_TEXTURE_CUBE_MAP, tex_envmap);
+	
+	
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 
-	vmath::mat4 proj_matrix = vmath::perspective(60.0f, (float)info.windowWidth / (float)info.windowHeight, 0.1f, 1000.0f);
-	view_matrix = vmath::lookat(vmath::vec3(15.0f * sinf(f), 0.0f, 15.0f * cosf(f)),
-		vmath::vec3(0.0f, 0.0f, 0.0f),
-		vmath::vec3(0.0f, 1.0f, 0.0f));
-	vmath::mat4 mv_matrix = view_matrix *
-		vmath::rotate(f, 1.0f, 0.0f, 0.0f) *
-		vmath::rotate(f * 130.1f, 0.0f, 1.0f, 0.0f) *
-		vmath::translate(0.0f, -4.0f, 0.0f);
+	model_matrix =
+		//vmath::rotate(0.0f, 0.0f, 1.0f, 0.0f) *
+		vmath::translate(0.0f, 0.0f, -100.0f) *
+		vmath::scale(100.0f);
 
-	block->proj_matrix = proj_matrix;
+	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
-	block->mv_matrix = mv_matrix;
 
-	glDisable(GL_DEPTH_TEST);
+	glCullFace(GL_FRONT);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	//glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
 #pragma endregion
 }
 
@@ -704,7 +699,6 @@ void assignment1_app::load_shaders()
 
 	glDeleteShader(vs);
 	glDeleteShader(fs);
-
 
 	vs = sb7::shader::load("skybox.vs.txt", GL_VERTEX_SHADER);
 	fs = sb7::shader::load("skybox.fs.txt", GL_FRAGMENT_SHADER);

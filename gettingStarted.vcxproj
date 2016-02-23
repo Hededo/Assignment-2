@@ -271,8 +271,6 @@
     <Text Include="floor.vs.txt" />
     <Text Include="phong_perfragment.fs.txt" />
     <Text Include="phong_perfragment.vs.txt" />
-    <Text Include="phong_pervertex.fs.txt" />
-    <Text Include="phong_pervertex.vs.txt" />
     <Text Include="render.fs.txt" />
     <Text Include="render.vs.txt" />
     <Text Include="skybox.fs.txt" />
