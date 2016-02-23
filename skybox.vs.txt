@@ -1,5 +1,7 @@
 #version 410 core
 
+layout (location = 0) in vec4 position; 
+
 // Matrices we'll need
 layout (std140) uniform constants
 {
@@ -19,14 +21,10 @@ out VS_OUT
 
 void main(void)
 {
-    vec4[4] vertices = vec4[4](vec4(-1.0, -1.0, -1.0, 1.0),
-                               vec4( 1.0, -1.0, -1.0, 1.0),
-                               vec4(-1.0,  1.0, -1.0, 1.0),
-                               vec4( 1.0,  1.0, -1.0, 1.0));
 
-	vec4 position = proj_matrix * mv_matrix * vertices[gl_VertexID];
+	vec4 p = proj_matrix * mv_matrix * position;
 
     vs_out.tc = position.xyz;
 
-    gl_Position = position;
+    gl_Position = p;
 }

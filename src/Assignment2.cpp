@@ -637,15 +637,16 @@ void assignment1_app::render(double currentTime)
 
 	model_matrix =
 		//vmath::rotate(0.0f, 0.0f, 1.0f, 0.0f) *
-		vmath::translate(0.0f, 0.0f, -100.0f) *
+		//vmath::rotate((float)currentTime * 14.5f, 0.0f, 1.0f, 0.0f) * //used to constantly rotate
+		vmath::translate(0.0f, 0.0f, 0.0f) *
 		vmath::scale(100.0f);
 
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 
 	glCullFace(GL_FRONT);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	//glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
+	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
 #pragma endregion
 }
 
