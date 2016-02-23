@@ -56,7 +56,7 @@ protected:
 
 	void load_shaders();
 
-	GLuint          per_fragment_program;
+	GLuint          per_fragment_program; //never used
 	GLuint          checkerFloorProgram;
 	GLuint          render_prog;
 	GLuint          skybox_prog;
@@ -64,6 +64,7 @@ protected:
 	GLuint          tex_object[2];
 	GLuint          tex_index;
 	GLuint          tex_envmap;
+	GLuint          face_envmap;
 
 	//Where uniforms are defined
 	struct uniforms_block
@@ -409,6 +410,7 @@ void assignment1_app::startup()
 
 #pragma region Bind envMap Texture
 	tex_envmap = sb7::ktx::file::load("mountaincube.ktx");
+	face_envmap = sb7::ktx::file::load("face.ktx");
 #pragma endregion
 
 
@@ -428,7 +430,6 @@ void assignment1_app::render(double currentTime)
 	glEnable(GL_CULL_FACE);
 	const float f = (float)currentTime * 0.1f;
 
-	glUseProgram(per_fragment_program);
 
 #pragma region Calculations for mouse interaction camera rotation and translation matrix
 	float fAngle = 0.0f;
@@ -557,7 +558,6 @@ void assignment1_app::render(double currentTime)
 	block->useUniformColor = falseVec;
 #pragma endregion
 
-	glUseProgram(per_fragment_program);
 #pragma region bind cube vertex data
 	glBindVertexArray(cube_vao);
 
@@ -605,9 +605,11 @@ void assignment1_app::render(double currentTime)
 
 #pragma endregion
 
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glUseProgram(skybox_prog);
 #pragma region Draw Face Cube
 
+	glBindTexture(GL_TEXTURE_CUBE_MAP, face_envmap);
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
@@ -629,7 +631,6 @@ void assignment1_app::render(double currentTime)
 	
 	//glUseProgram(skybox_prog);
 #pragma region Draw Skybox
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, tex_envmap);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
