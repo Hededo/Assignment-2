@@ -7,7 +7,8 @@ layout (location = 2) in vec4 attributeColor;
 
 layout (std140) uniform constants
 {
-    mat4 mv_matrix;													
+    mat4 mv_matrix;
+	mat4 model_matrix;													
 	mat4 view_matrix;												
 	mat4 proj_matrix;												
 	vec4 uni_color;		
@@ -36,7 +37,7 @@ void main(void)
     vec4 pos_vs = mv_matrix * position;
 
     vs_out.normal = normal.xyz;
-    vs_out.view = pos_vs.xyz;
+    vs_out.view = vec3(-view_matrix * model_matrix * position); //pos_vs.xyz;
 
     gl_Position = proj_matrix * pos_vs;
 }

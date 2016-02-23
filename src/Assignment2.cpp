@@ -69,6 +69,7 @@ protected:
 	struct uniforms_block
 	{
 		vmath::mat4     mv_matrix;
+		vmath::mat4     model_matrix;
 		vmath::mat4     view_matrix;
 		vmath::mat4     proj_matrix;
 		vmath::vec4     uni_color;
@@ -511,14 +512,16 @@ void assignment1_app::render(double currentTime)
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 
+
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 	vmath::mat4 model_matrix =
 		//vmath::translate(-9.3f, -16.0f, 1.0f) *
 		vmath::translate(10.0f, -6.3f, -1.0f) *
 		vmath::scale(6.0f);
+	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
-	block->uni_color = purple;
+	block->uni_color = orange;
 	block->useUniformColor = trueVec;
 	block->invertNormals = falseVec;
 
@@ -535,9 +538,10 @@ void assignment1_app::render(double currentTime)
     model_matrix =
 		vmath::translate(-9.3f, -13.0f, 1.0f) *
 		vmath::scale(6.0f);
+	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
-	block->uni_color = orange;
+	block->uni_color = purple;
 	block->useUniformColor = falseVec;
 	block->invertNormals = falseVec;
 
@@ -590,7 +594,7 @@ void assignment1_app::render(double currentTime)
 		vmath::translate(vmath::vec3(0.0f, -25.0f, 0.0f)) * 
 		vmath::rotate(45.0f, 0.0f, 1.0f, 0.0f)*
 		vmath::scale(vmath::vec3(30.0f, 0.0f, 30.0f));
-
+	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 	block->invertNormals = trueVec;
@@ -612,7 +616,7 @@ void assignment1_app::render(double currentTime)
 		vmath::rotate(0.0f, 0.0f, 1.0f, 0.0f) *
 		vmath::translate(10.0f, -17.3f, -1.0f) *
 		vmath::scale(5.0f);
-
+	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 	block->useUniformColor = falseVec;
@@ -638,7 +642,7 @@ void assignment1_app::render(double currentTime)
 	model_matrix =
 		vmath::translate(0.0f, 0.0f, 0.0f) *
 		vmath::scale(150.0f);
-
+	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 
