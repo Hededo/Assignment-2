@@ -60,6 +60,7 @@ protected:
 	GLuint          checkerFloorProgram;
 	GLuint          render_prog;
 	GLuint          skybox_prog;
+	GLuint          point_prog;
 
 	GLuint          tex_object[2];
 	GLuint          tex_index;
@@ -692,8 +693,6 @@ void assignment1_app::render(double currentTime)
 	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
 #pragma endregion
 
-	
-	//glUseProgram(skybox_prog);
 #pragma region Draw Skybox
 	glBindTexture(GL_TEXTURE_CUBE_MAP, tex_envmap);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -713,6 +712,14 @@ void assignment1_app::render(double currentTime)
 
 	glCullFace(GL_FRONT);
 	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
+#pragma endregion
+
+#pragma region Point Sprite
+	glUseProgram(point_prog);
+
+	glPointSize(40.0f);
+
+	glDrawArrays(GL_POINTS, 0, 1);
 #pragma endregion
 }
 
@@ -774,6 +781,17 @@ void assignment1_app::load_shaders()
 	glAttachShader(skybox_prog, vs);
 	glAttachShader(skybox_prog, fs);
 	glLinkProgram(skybox_prog);
+
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+
+	vs = sb7::shader::load("point.vs.txt", GL_VERTEX_SHADER);
+	fs = sb7::shader::load("point.fs.txt", GL_FRAGMENT_SHADER);
+
+	point_prog = glCreateProgram();
+	glAttachShader(point_prog, vs);
+	glAttachShader(point_prog, fs);
+	glLinkProgram(point_prog);
 
 	glDeleteShader(vs);
 	glDeleteShader(fs);
