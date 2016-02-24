@@ -12,6 +12,7 @@ layout (std140) uniform constants
 	vec4 light_pos;									     		
 	vec4 useUniformColor;	
 	vec4 invertNormals;
+	vec4 colorPercent;
 };
 
 in VS_OUT
@@ -36,7 +37,8 @@ void main(void)
 
 	if (fs_in.useColor.x == 1)
 	{
-	   color = texture(tex_cubemap, reflection) * fs_in.uniColor;
+	   color = mix(color, fs_in.uniColor, colorPercent.x);
 	}
+
 
 }

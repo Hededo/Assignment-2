@@ -77,7 +77,10 @@ protected:
 		vmath::vec4     lightPos;
 		vmath::vec4	    useUniformColor;
 		vmath::vec4	    invertNormals;
+		vmath::vec4	    colorPercent;
 	};
+
+	float           colorPercent = 0.2f;
 
 	GLuint          uniforms_buffer;
 
@@ -292,22 +295,38 @@ const vmath::vec4 trueVec = vmath::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 #define W 0xFF, 0xFF, 0xFF, 0xFF
 const GLubyte tex_data[16 * 16 * 4] =
 {
-	B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
-	B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
-	B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
-	B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
-	B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
-	B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
-	B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
-	B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
-	W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
-	W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
-	W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
-	W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
-	W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
-	W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
-	W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
-	W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, sB, W, W,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B
 };
 #undef B
 #undef W
@@ -506,6 +525,7 @@ void assignment1_app::render(double currentTime)
 #pragma region Uniforms that remain constant for all geometery
 	block->proj_matrix = perspective_matrix;
 	block->lightPos = lightPos;
+	block->colorPercent = vmath::vec4(colorPercent, colorPercent, colorPercent, colorPercent);
 #pragma endregion
 
 	glUseProgram(render_prog);
@@ -743,6 +763,18 @@ void assignment1_app::onKey(int key, int action)
 			tex_index++;
 			if (tex_index > 1)
 				tex_index = 0;
+			break;
+		case 'P':
+			if (colorPercent < 1.0) 
+			{
+				colorPercent += 0.05;
+			}
+			break;
+		case 'O':
+			if (colorPercent > 0.0)
+			{
+				colorPercent -= 0.05;
+			}
 			break;
 		}
 	}
