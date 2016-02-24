@@ -22,7 +22,6 @@ public:
 	assignment1_app()
 		: per_fragment_program(0),
 		checkerFloorProgram(0),
-		tex_index(0),
 		render_prog(0)
 	{
 	}
@@ -62,8 +61,7 @@ protected:
 	GLuint          skybox_prog;
 	GLuint          point_prog;
 
-	GLuint          tex_object[2];
-	GLuint          tex_index;
+	GLuint          tex_object;
 	GLuint          tex_envmap;
 	GLuint          face_envmap;
 	GLuint          tex_billboard;
@@ -85,6 +83,7 @@ protected:
 	float	colorPercent = 0.2f;
 	GLuint	mipMapToggler = 0;
 	GLuint filterMode = 0;
+	bool showBillboard = true;
 
 	GLuint          uniforms_buffer;
 
@@ -318,40 +317,40 @@ const GLubyte tex_data[16 * 16 * 4] =
 	//W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B
 
 	// 4 x 4
-	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
-	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
-	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
-	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
-	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
-	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
-	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
-	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
-	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
-	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
-	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
-	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
-	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
-	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
-	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
-	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B
+	//B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	//B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	//B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	//B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	//W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	//W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	//W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	//W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	//B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	//B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	//B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	//B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	//W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	//W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	//W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	//W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B
 
 	// 2 x 2
-	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B
+	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B
 
 	// 1 x 1
 	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
@@ -462,15 +461,14 @@ void assignment1_app::startup()
 
 #pragma region Bind Floor Texture
 	// Generate a name for the texture
-	glGenTextures(1, &tex_object[0]);
+	glGenTextures(1, &tex_object);
 	// Now bind it to the context using the GL_TEXTURE_2D binding point
-	glBindTexture(GL_TEXTURE_2D, tex_object[0]);
+	glBindTexture(GL_TEXTURE_2D, tex_object);
 	// Specify the amount of storage we want to use for the texture
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB8, 16, 16);
 	// Assume the texture is already bound to the GL_TEXTURE_2D target
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 16, 16, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
 
-	tex_object[1] = sb7::ktx::file::load("pattern1.ktx");
 #pragma endregion
 
 #pragma region load envMap Texture
@@ -482,7 +480,7 @@ void assignment1_app::startup()
 #pragma endregion
 
 #pragma region load billboard Texture
-	tex_billboard = sb7::ktx::file::load("213.ktx");
+	tex_billboard = sb7::ktx::file::load("pattern1.ktx");
 #pragma endregion
 
 
@@ -654,7 +652,8 @@ void assignment1_app::render(double currentTime)
 	glUseProgram(checkerFloorProgram);
 #pragma region Draw Floor
 
-	glBindTexture(GL_TEXTURE_2D, tex_object[tex_index]);
+	glBindTexture(GL_TEXTURE_2D, tex_object);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode);
 
 	
@@ -683,6 +682,7 @@ void assignment1_app::render(double currentTime)
 #pragma region Draw Face Cube
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, face_envmap);
+
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
@@ -719,6 +719,7 @@ void assignment1_app::render(double currentTime)
 	block->view_matrix = view_matrix;
 
 	glCullFace(GL_FRONT);
+
 	glDrawArrays(GL_TRIANGLES, 0, numberOfCubeVertices);
 #pragma endregion
 
@@ -730,8 +731,7 @@ void assignment1_app::render(double currentTime)
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 
-	model_matrix =
-		vmath::translate(0.0f, 0.0f, -1.0f);
+	model_matrix = vmath::translate(0.0f, 0.0f, -10.0f);
 	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
@@ -739,8 +739,10 @@ void assignment1_app::render(double currentTime)
 	glUseProgram(point_prog);
 
 	glPointSize(40.0f);
-	glCullFace(GL_BACK);
-	glDrawArrays(GL_POINTS, 0, 1);
+	glCullFace(GL_FRONT);
+	if (showBillboard) {
+		glDrawArrays(GL_POINTS, 0, 1);
+	}
 #pragma endregion
 }
 
@@ -840,21 +842,16 @@ void assignment1_app::onKey(int key, int action)
 			fYpos = 0.0f;
 			fZpos = 75.0f;
 			break;
-		case 'T':
-			tex_index++;
-			if (tex_index > 1)
-				tex_index = 0;
-			break;
 		case 'P':
 			if (colorPercent < 1.0) 
 			{
-				colorPercent += 0.05;
+				colorPercent += 0.05f;
 			}
 			break;
 		case 'O':
 			if (colorPercent > 0.0)
 			{
-				colorPercent -= 0.05;
+				colorPercent -= 0.05f;
 			}
 			break;
 		case '1':
@@ -874,6 +871,9 @@ void assignment1_app::onKey(int key, int action)
 			break;
 		case 'S':
 			cubeAndSphereOffset[2] -= 1;
+			break;
+		case 'B':
+			showBillboard = !showBillboard;
 			break;
 		case 'M':
 			mipMapToggler += 1;
