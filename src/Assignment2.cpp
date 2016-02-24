@@ -507,7 +507,9 @@ void assignment1_app::render(double currentTime)
 	block->proj_matrix = perspective_matrix;
 	block->lightPos = lightPos;
 #pragma endregion
+
 	glUseProgram(render_prog);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, tex_envmap);
 #pragma region Draw Semi-Reflective Sphere
 	glBindVertexArray(sphere_vao);
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
@@ -591,7 +593,7 @@ void assignment1_app::render(double currentTime)
 
 	model_matrix =
 		//vmath::rotate((float)currentTime * 14.5f, 0.0f, 1.0f, 0.0f) * //used to constantly rotate
-		vmath::translate(vmath::vec3(0.0f, -25.0f, 0.0f)) * 
+		vmath::translate(vmath::vec3(0.0f, -22.5f, 0.0f)) * 
 		vmath::rotate(45.0f, 0.0f, 1.0f, 0.0f)*
 		vmath::scale(vmath::vec3(30.0f, 0.0f, 30.0f));
 	block->model_matrix = model_matrix;
