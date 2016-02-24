@@ -1,5 +1,5 @@
 ﻿  Assignment2.cpp
 D:\Local Docs\Code\CS 5610\Assignment-2\include\vmath.h(1022): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-src\Assignment2.cpp(831): warning C4305: '+=': truncation from 'double' to 'float'
-src\Assignment2.cpp(837): warning C4305: '-=': truncation from 'double' to 'float'
+src\Assignment2.cpp(851): warning C4305: '+=': truncation from 'double' to 'float'
+src\Assignment2.cpp(857): warning C4305: '-=': truncation from 'double' to 'float'
   gettingStarted.vcxproj -> D:\Local Docs\Code\CS 5610\Assignment-2\bin\gettingStarted_d.exe

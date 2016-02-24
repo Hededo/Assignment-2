@@ -66,6 +66,7 @@ protected:
 	GLuint          tex_index;
 	GLuint          tex_envmap;
 	GLuint          face_envmap;
+	GLuint          tex_billboard;
 
 	//Where uniforms are defined
 	struct uniforms_block
@@ -83,7 +84,7 @@ protected:
 
 	float	colorPercent = 0.2f;
 	GLuint	mipMapToggler = 0;
-	vmath::uvec2 filterMode = vmath::uvec2(0, 0);
+	GLuint filterMode = 0;
 
 	GLuint          uniforms_buffer;
 
@@ -472,9 +473,16 @@ void assignment1_app::startup()
 	tex_object[1] = sb7::ktx::file::load("pattern1.ktx");
 #pragma endregion
 
-#pragma region Bind envMap Texture
+#pragma region load envMap Texture
 	tex_envmap = sb7::ktx::file::load("mountaincube.ktx");
+#pragma endregion
+
+#pragma region load face Texture
 	face_envmap = sb7::ktx::file::load("face.ktx");
+#pragma endregion
+
+#pragma region load billboard Texture
+	tex_billboard = sb7::ktx::file::load("213.ktx");
 #pragma endregion
 
 
@@ -646,10 +654,10 @@ void assignment1_app::render(double currentTime)
 	glUseProgram(checkerFloorProgram);
 #pragma region Draw Floor
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode[1]);
-
 	glBindTexture(GL_TEXTURE_2D, tex_object[tex_index]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode);
+
+	
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
@@ -705,7 +713,7 @@ void assignment1_app::render(double currentTime)
 
 	model_matrix =
 		vmath::translate(0.0f, 0.0f, 0.0f) *
-		vmath::scale(150.0f);
+		vmath::scale(256.0f);
 	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
@@ -715,10 +723,23 @@ void assignment1_app::render(double currentTime)
 #pragma endregion
 
 #pragma region Point Sprite
+	glBindTexture(GL_TEXTURE_2D, tex_billboard);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
+	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
+
+	model_matrix =
+		vmath::translate(0.0f, 0.0f, -1.0f);
+	block->model_matrix = model_matrix;
+	block->mv_matrix = view_matrix * model_matrix;
+	block->view_matrix = view_matrix;
+
 	glUseProgram(point_prog);
 
 	glPointSize(40.0f);
-
+	glCullFace(GL_BACK);
 	glDrawArrays(GL_POINTS, 0, 1);
 #pragma endregion
 }
@@ -856,21 +877,27 @@ void assignment1_app::onKey(int key, int action)
 			break;
 		case 'M':
 			mipMapToggler += 1;
-			GLuint mode = mipMapToggler % 4;
+			GLuint mode = mipMapToggler % 6;
 
 			switch (mode)
 			{
 			case 0:
-				filterMode = vmath::uvec2(GL_LINEAR, GL_LINEAR);
+				filterMode = GL_LINEAR;
 				break;
 			case 1:
-				filterMode = vmath::uvec2(GL_LINEAR, GL_NEAREST);
+				filterMode = GL_NEAREST;
 				break;
 			case 2:
-				filterMode = vmath::uvec2(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+				filterMode = GL_NEAREST_MIPMAP_NEAREST;
 				break;
 			case 3:
-				filterMode = vmath::uvec2(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST);
+				filterMode = GL_NEAREST_MIPMAP_LINEAR;
+				break;
+			case 4:
+				filterMode = GL_LINEAR_MIPMAP_NEAREST;
+				break;
+			case 5:
+				filterMode = GL_LINEAR_MIPMAP_LINEAR;
 				break;
 			default:
 				break;
