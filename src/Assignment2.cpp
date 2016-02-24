@@ -80,7 +80,9 @@ protected:
 		vmath::vec4	    colorPercent;
 	};
 
-	float           colorPercent = 0.2f;
+	float	colorPercent = 0.2f;
+	GLuint	mipMapToggler = 0;
+	vmath::uvec2 filterMode = vmath::uvec2(0, 0);
 
 	GLuint          uniforms_buffer;
 
@@ -295,6 +297,43 @@ const vmath::vec4 trueVec = vmath::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 #define W 0xFF, 0xFF, 0xFF, 0xFF
 const GLubyte tex_data[16 * 16 * 4] =
 {
+	// 8 x 8
+	//B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
+	//B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
+	//B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
+	//B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
+	//B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
+	//B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
+	//B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
+	//B, B, B, B, B, B, B, B, W, W, W, W, W, W, W, W,
+	//W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
+	//W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
+	//W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
+	//W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
+	//W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
+	//W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
+	//W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B,
+	//W, W, W, W, W, W, W, W, B, B, B, B, B, B, B, B
+
+	// 4 x 4
+	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	B, B, B, B, W, W, W, W, B, B, B, B, W, W, W, W,
+	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B,
+	W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B
+
+	// 2 x 2
 	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
 	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
 	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
@@ -303,7 +342,7 @@ const GLubyte tex_data[16 * 16 * 4] =
 	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
 	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
 	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	//B, B, W, W, B, B, W, W, B, B, W, W, B, sB, W, W,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
 	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
 	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
 	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
@@ -311,22 +350,24 @@ const GLubyte tex_data[16 * 16 * 4] =
 	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
 	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
 	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B
-	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B
+
+	// 1 x 1
+	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B
 };
 #undef B
 #undef W
@@ -355,6 +396,9 @@ private:
 	float iLightPosY = 0.5f;
 	float iLightPosZ = 0.3f;
 	vmath::vec4 lightPos = vmath::vec4(iLightPosX, iLightPosY, iLightPosZ, 1.0f);
+
+	// Offset move location cube with sphere
+	vmath::vec3 cubeAndSphereOffset = vmath::vec3(0, 0, 0);
 
 	GLuint buffer;
 	GLuint colorBuffer;
@@ -503,8 +547,6 @@ void assignment1_app::render(double currentTime)
 
 	glViewport(0, 0, info.windowWidth, info.windowHeight);
 
-	glBindTexture(GL_TEXTURE_2D, tex_object[tex_index]);
-
 	// Create sky blue background
 	glClearBufferfv(GL_COLOR, 0, skyBlue);
 	glClearBufferfv(GL_DEPTH, 0, ones);
@@ -539,7 +581,7 @@ void assignment1_app::render(double currentTime)
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 	vmath::mat4 model_matrix =
 		//vmath::translate(-9.3f, -16.0f, 1.0f) *
-		vmath::translate(10.0f, -6.3f, -1.0f) *
+		vmath::translate(10.0f + cubeAndSphereOffset[0], -6.3f + cubeAndSphereOffset[1], -1.0f + cubeAndSphereOffset[2]) *
 		vmath::scale(6.0f);
 	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
@@ -603,10 +645,10 @@ void assignment1_app::render(double currentTime)
 	glUseProgram(checkerFloorProgram);
 #pragma region Draw Floor
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode[1]);
 
-	glBindTexture(GL_TEXTURE_2D, tex_object[0]);
+	glBindTexture(GL_TEXTURE_2D, tex_object[tex_index]);
 	glUnmapBuffer(GL_UNIFORM_BUFFER); //release the mapping of a buffer object's data store into the client's address space
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
@@ -615,7 +657,7 @@ void assignment1_app::render(double currentTime)
 		//vmath::rotate((float)currentTime * 14.5f, 0.0f, 1.0f, 0.0f) * //used to constantly rotate
 		vmath::translate(vmath::vec3(0.0f, -22.5f, 0.0f)) * 
 		vmath::rotate(45.0f, 0.0f, 1.0f, 0.0f)*
-		vmath::scale(vmath::vec3(30.0f, 0.0f, 30.0f));
+		vmath::scale(vmath::vec3(48.0f, 0.0f, 48.0f));
 	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
@@ -638,7 +680,7 @@ void assignment1_app::render(double currentTime)
 
 	model_matrix =
 		vmath::rotate(0.0f, 0.0f, 1.0f, 0.0f) *
-		vmath::translate(10.0f, -17.3f, -1.0f) *
+		vmath::translate(10.0f + cubeAndSphereOffset[0], -17.3f + cubeAndSphereOffset[1], -1.0f + cubeAndSphereOffset[2]) *
 		vmath::scale(5.0f);
 	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
@@ -774,6 +816,46 @@ void assignment1_app::onKey(int key, int action)
 			if (colorPercent > 0.0)
 			{
 				colorPercent -= 0.05;
+			}
+			break;
+		case '1':
+			cubeAndSphereOffset[0] += 1;
+			break;
+		case '2':
+			cubeAndSphereOffset[0] -= 1;
+			break;
+		case 'Q':
+			cubeAndSphereOffset[1] += 1;
+			break;
+		case 'W':
+			cubeAndSphereOffset[1] -= 1;
+			break;
+		case 'A':
+			cubeAndSphereOffset[2] += 1;
+			break;
+		case 'S':
+			cubeAndSphereOffset[2] -= 1;
+			break;
+		case 'M':
+			mipMapToggler += 1;
+			GLuint mode = mipMapToggler % 4;
+
+			switch (mode)
+			{
+			case 0:
+				filterMode = vmath::uvec2(GL_LINEAR, GL_LINEAR);
+				break;
+			case 1:
+				filterMode = vmath::uvec2(GL_LINEAR, GL_NEAREST);
+				break;
+			case 2:
+				filterMode = vmath::uvec2(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+				break;
+			case 3:
+				filterMode = vmath::uvec2(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST);
+				break;
+			default:
+				break;
 			}
 			break;
 		}
