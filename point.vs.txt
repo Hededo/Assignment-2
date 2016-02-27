@@ -15,7 +15,7 @@ layout (std140) uniform constants
 
 void main(void)                              
 {                   
-	//vec4 position = mv_matrix * vec4(0.0, 0.0, 0.0, 1.0);
-	vec4 position = vec4(0.0, 0.0, 0.0, 1.0);              
+	vec4 position = proj_matrix * mv_matrix * vec4(0.0, 0.0, 0.0, 1.0);
+	//vec4 position = vec4(0.0, 0.0, 0.0, 1.0);              
 	gl_Position =  position;  
 }                                            

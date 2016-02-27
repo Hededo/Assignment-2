@@ -335,40 +335,40 @@ const GLubyte tex_data[16 * 16 * 4] =
 	//W, W, W, W, B, B, B, B, W, W, W, W, B, B, B, B
 
 	// 2 x 2
-	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
-	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
-	W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//B, B, W, W, B, B, W, W, B, B, W, W, B, B, W, W,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B,
+	//W, W, B, B, W, W, B, B, W, W, B, B, W, W, B, B
 
 	// 1 x 1
-	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
-	//B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
-	//W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B,
+	B, W, B, W, B, W, B, W, B, W, B, W, B, W, B, W,
+	W, B, W, B, W, B, W, B, W, B, W, B, W, B, W, B
 };
 #undef B
 #undef W
@@ -653,7 +653,7 @@ void assignment1_app::render(double currentTime)
 #pragma region Draw Floor
 
 	glBindTexture(GL_TEXTURE_2D, tex_object);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode);
 
 	
@@ -731,14 +731,14 @@ void assignment1_app::render(double currentTime)
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniforms_buffer);
 	block = (uniforms_block *)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(uniforms_block), GL_MAP_WRITE_BIT);
 
-	model_matrix = vmath::translate(0.0f, 0.0f, -10.0f);
+	model_matrix = vmath::translate(25.0f, 10.0f, -40.0f);
 	block->model_matrix = model_matrix;
 	block->mv_matrix = view_matrix * model_matrix;
 	block->view_matrix = view_matrix;
 
 	glUseProgram(point_prog);
 
-	glPointSize(40.0f);
+	glPointSize(100.0f);
 	glCullFace(GL_FRONT);
 	if (showBillboard) {
 		glDrawArrays(GL_POINTS, 0, 1);
